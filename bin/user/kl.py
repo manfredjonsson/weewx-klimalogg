@@ -1185,7 +1185,7 @@ Step 8. Go to step 1 to wait for state 0xde16 again.
 from datetime import datetime
 import random
 
-import StringIO
+import io
 import sys
 import syslog
 import threading
@@ -1380,11 +1380,11 @@ def logerr(msg):
 
 def logtee(msg):
     loginf(msg)
-    print "%s\r" % msg
+    print("%s\r" % msg)
 
 
 def log_traceback(dst=syslog.LOG_INFO, prefix='**** '):
-    sfd = StringIO.StringIO()
+    sfd = io.StringIO()
     traceback.print_exc(file=sfd)
     sfd.seek(0)
     for line in sfd:
@@ -1395,7 +1395,7 @@ def log_traceback(dst=syslog.LOG_INFO, prefix='**** '):
 def log_frame(n, buf):
     logdbg('frame length is %d' % n)
     strbuf = ''
-    for i in xrange(0, n):
+    for i in range(0, n):
         strbuf += str('%02x ' % buf[i])
         if (i + 1) % 16 == 0:
             logdbg(strbuf)
@@ -1412,7 +1412,7 @@ def calc_checksum(buf, start, end=None):
     if end is None:
         end = len(buf)
     cs = 0
-    for i in xrange(start, end):
+    for i in range(start, end):
         cs += buf[i]
     return cs
 
@@ -1438,7 +1438,7 @@ def bytes_to_addr(a, b, c):
 
 
 def addr_to_index(addr):
-    return (addr - 0x070000) / 32
+    return (addr - 0x070000) // 32
 
 
 def index_to_addr(idx):
@@ -1448,9 +1448,9 @@ def index_to_addr(idx):
 def print_dict(data):
     for x in sorted(data.keys()):
         if x == 'dateTime':
-            print '%s: %s' % (x, weeutil.weeutil.timestamp_to_string(data[x]))
+            print('%s: %s' % (x, weeutil.weeutil.timestamp_to_string(data[x])))
         else:
-            print '%s: %s' % (x, data[x])
+            print('%s: %s' % (x, data[x]))
 
 PRESS_USB = "press the USB button to start communication"
 
@@ -1504,24 +1504,24 @@ class KlimaLoggConfEditor(weewx.drivers.AbstractConfEditor):
 """
 
     def prompt_for_settings(self):
-        print "Specify the frequency used between the station and the"
-        print "transceiver, either 'US' (915 MHz) or 'EU' (868.3 MHz)."
+        print("Specify the frequency used between the station and the")
+        print("transceiver, either 'US' (915 MHz) or 'EU' (868.3 MHz).")
         freq = self._prompt('frequency', 'EU', ['US', 'EU'])
         return {'transceiver_frequency': freq}
 
     def modify_config(self, config_dict):
         if 'Simulator' in config_dict:
-            print "Removing Simulator stanza"
+            print("Removing Simulator stanza")
             del config_dict['Simulator']
         if ('StdReport' in config_dict and
             'StandardReport' in config_dict['StdReport']):
-            print "Removing StandardReport stanza"
+            print("Removing StandardReport stanza")
             del config_dict['StdReport']['StandardReport']
         if 'StdReport' in config_dict:
-            print "Using kl_binding in StdReport"
+            print("Using kl_binding in StdReport")
             config_dict['StdReport']['data_binding'] = 'kl_binding'
         if 'StdArchive' in config_dict:
-            print "Using kl_binding in StdArchive"
+            print("Using kl_binding in StdArchive")
             config_dict['StdArchive']['data_binding'] = 'kl_binding'
 
 
@@ -1563,30 +1563,30 @@ class KlimaLoggConfigurator(weewx.drivers.AbstractConfigurator):
 
     def check_transceiver(self, maxtries):
         """See if the transceiver is installed and operational."""
-        print 'Checking for transceiver...'
+        print('Checking for transceiver...')
         ntries = 0
         while ntries < maxtries:
             ntries += 1
             if self.station.transceiver_is_present():
-                print 'Transceiver is present'
+                print('Transceiver is present')
                 sn = self.station.get_transceiver_serial()
-                print 'serial: %s' % sn
+                print('serial: %s' % sn)
                 tid = self.station.get_transceiver_id()
-                print 'id: %d (0x%04x)' % (tid, tid)
+                print('id: %d (0x%04x)' % (tid, tid))
                 break
-            print 'Not found (attempt %d of %d) ...' % (ntries, maxtries)
+            print('Not found (attempt %d of %d) ...' % (ntries, maxtries))
             time.sleep(5)
         else:
-            print 'Transceiver not responding.'
+            print('Transceiver not responding.')
 
     def pair(self, maxtries):
         """Pair the transceiver with the station console."""
-        print 'Pairing transceiver with console...'
+        print('Pairing transceiver with console...')
         maxwait = 90  # how long to wait between button presses, in seconds
         ntries = 0
         while ntries < maxtries or maxtries == 0:
             if self.station.transceiver_is_paired():
-                print 'Transceiver is paired to console'
+                print('Transceiver is paired to console')
                 break
             ntries += 1
             msg = 'Press and hold the USB button until "USB" appears'
@@ -1594,14 +1594,14 @@ class KlimaLoggConfigurator(weewx.drivers.AbstractConfigurator):
                 msg += ' (attempt %d of %d)' % (ntries, maxtries)
             else:
                 msg += ' (attempt %d)' % ntries
-            print msg
+            print(msg)
             now = start_ts = int(time.time())
             while (now - start_ts < maxwait and
                    not self.station.transceiver_is_paired()):
                 time.sleep(5)
                 now = int(time.time())
         else:
-            print 'Transceiver not paired to console.'
+            print('Transceiver not paired to console.')
 
     def get_config(self, maxtries):
         start_ts = None
@@ -1615,20 +1615,20 @@ class KlimaLoggConfigurator(weewx.drivers.AbstractConfigurator):
                 start_ts = int(time.time())
             else:
                 dur = int(time.time()) - start_ts
-                print 'No data after %d seconds (%s)' % (dur, PRESS_USB)
+                print('No data after %d seconds (%s)' % (dur, PRESS_USB))
             time.sleep(30)
         return None
 
     def show_info(self, maxtries):
         """Query the station then display the settings."""
-        print 'Querying the station for the configuration...'
+        print('Querying the station for the configuration...')
         cfg = self.get_config(maxtries)
         if cfg is not None:
             print_dict(cfg)
 
     def show_current(self, maxtries):
         """Get current weather observation."""
-        print 'Querying the station for current weather data...'
+        print('Querying the station for current weather data...')
         start_ts = None
         ntries = 0
         self.station.clear_wait_at_start() # let rf communication start
@@ -1642,20 +1642,20 @@ class KlimaLoggConfigurator(weewx.drivers.AbstractConfigurator):
                 start_ts = int(time.time())
             else:
                 dur = int(time.time()) - start_ts
-                print 'No data after %d seconds (%s)' % (dur, PRESS_USB)
+                print('No data after %d seconds (%s)' % (dur, PRESS_USB))
             time.sleep(30)
 
     def show_history(self, maxtries, ts=0, count=0):
         """Display the indicated number of records or the records since the 
         specified timestamp (local time, in seconds)"""
-        print "Querying the station for historical records..."
+        print("Querying the station for historical records...")
         ntries = 0
         last_n = nrem = None
         last_ts = int(time.time())
         self.station.start_caching_history(since_ts=ts, num_rec=count)
         while nrem is None or nrem > 0:
             if ntries >= maxtries:
-                print 'Giving up after %d tries' % ntries
+                print('Giving up after %d tries' % ntries)
                 break
             time.sleep(30)
             ntries += 1
@@ -1663,7 +1663,7 @@ class KlimaLoggConfigurator(weewx.drivers.AbstractConfigurator):
             n = self.station.get_num_history_scanned()
             if n == last_n:
                 dur = now - last_ts
-                print 'No data after %d seconds (%s)' % (dur, PRESS_USB)
+                print('No data after %d seconds (%s)' % (dur, PRESS_USB))
             else:
                 ntries = 0
                 last_ts = now
@@ -1671,15 +1671,15 @@ class KlimaLoggConfigurator(weewx.drivers.AbstractConfigurator):
             nrem = self.station.get_uncached_history_count()
             ni = self.station.get_next_history_index()
             li = self.station.get_latest_history_index()
-            print "  Scanned %s record sets: current=%s latest=%s remaining=%s\r" % (n - 1, ni, li, nrem)
+            print("  Scanned %s record sets: current=%s latest=%s remaining=%s\r" % (n - 1, ni, li, nrem))
             sys.stdout.flush()
         self.station.stop_caching_history()
         records = self.station.get_history_cache_records()
         self.station.clear_history_cache()
-        print
-        print 'Found %d records' % len(records)
+        print()
+        print('Found %d records' % len(records))
         for r in records:
-            print r
+            print(r)
 
 
 class KlimaLoggDriver(weewx.drivers.AbstractDevice):
@@ -1890,7 +1890,6 @@ class KlimaLoggDriver(weewx.drivers.AbstractDevice):
                 n = self.get_cached_history_count()
                 batch_started = n > 0
                 if n == last_n:
-                    dur = now - last_ts
                     if not batch_started:
                         if records_handled == 0:
                             logtee(PRESS_USB)
@@ -2437,7 +2436,7 @@ class Decode(object):
                        (label, minutes, hours, days, month, year))
         if result is None:
             # FIXME: use None instead of a really old date to indicate invalid
-            result = datetime(1900, 01, 01, 00, 00)
+            result = datetime(1900, 0o1, 0o1, 00, 00)
         return result
 
     @staticmethod
@@ -2480,7 +2479,7 @@ class Decode(object):
                        (label, minutes, hours, days, month, year))
         if result is None:
             # FIXME: use None instead of a really old date to indicate invalid
-            result = datetime(1900, 01, 01, 00, 00)
+            result = datetime(1900, 0o1, 0o1, 00, 00)
         return result
 
     @staticmethod
@@ -2688,7 +2687,7 @@ class StationConfig(object):
     @staticmethod
     def reverseByteOrder(buf, start, count):
         """reverse count bytes in buf beginning at start"""
-        for i in xrange(0, count >> 1):
+        for i in range(0, count >> 1):
             tmp = buf[start + i]
             buf[start + i] = buf[start + count - i - 1]
             buf[start + count - i - 1] = tmp
@@ -2698,7 +2697,7 @@ class StationConfig(object):
         """Parse 3-digit number with 0 decimals, insert into buf"""
         num = int(number)
         nbuf = [0] * 3
-        for i in xrange(3 - numbytes, 3):
+        for i in range(3 - numbytes, 3):
             nbuf[i] = num % 10
             num //= 10
         if startOnHiNibble:
@@ -2863,7 +2862,7 @@ class HistoryData(object):
         self.values = {}
         for i in range(1, 7):
             self.values['Pos%dAlarm' % i] = 0
-            self.values['Pos%dDT' % i] = datetime(1900, 01, 01, 00, 00)
+            self.values['Pos%dDT' % i] = datetime(1900, 0o1, 0o1, 00, 00)
             self.values['Pos%dHumidityHi' % i] = SensorLimits.humidity_NP
             self.values['Pos%dHumidityLo' % i] = SensorLimits.humidity_NP
             self.values['Pos%dHumidity' % i] = SensorLimits.humidity_NP
@@ -3080,7 +3079,7 @@ class Transceiver(object):
             buf = Transceiver.readCfg(handle, 0x1F9, 7)
             if buf:
                 return ''.join(['%02d' % x for x in buf[0:7]])
-        except usb.USBError, e:
+        except usb.USBError as e:
             logerr("cannot read serial number: %s" % e)
         finally:
             # if we claimed the interface, we must release it
@@ -3111,7 +3110,7 @@ class Transceiver(object):
             logdbg('claiming USB interface %d' % interface)
             handle.claimInterface(interface)
             handle.setAltInterface(interface)
-        except usb.USBError, e:
+        except usb.USBError as e:
             Transceiver._close_device(handle)
             logcrt('Unable to claim USB interface %s: %s' % (interface, e))
             raise weewx.WeeWxIOError(e)
@@ -3201,11 +3200,11 @@ class Transceiver(object):
                 timeout=self.timeout)
             new_data = [0] * 0x15
             if nbytes < 16:
-                for i in xrange(0, nbytes):
+                for i in range(0, nbytes):
                     new_data[i] = buf[i + 4]
                 nbytes = 0
             else:
-                for i in xrange(0, 16):
+                for i in range(0, 16):
                     new_data[i] = buf[i + 4]
                 nbytes -= 16
                 addr += 16
@@ -3231,7 +3230,7 @@ class Transceiver(object):
         buf[0] = 0xd5
         buf[1] = nbytes >> 8
         buf[2] = nbytes
-        for i in xrange(0, nbytes):
+        for i in range(0, nbytes):
             buf[i + 3] = data[i]
         if DEBUG_COMM == 1:
             self.dump('setFrame', buf, 'short')
@@ -3254,7 +3253,7 @@ class Transceiver(object):
             timeout=self.timeout)
         data = [0] * 0x131
         nbytes = (buf[1] << 8 | buf[2]) & 0x1ff
-        for i in xrange(0, nbytes):
+        for i in range(0, nbytes):
             data[i] = buf[i + 3]
         if DEBUG_COMM == 1:
             self.dump('getFrame', buf, 'short')
@@ -3365,11 +3364,11 @@ class Transceiver(object):
                 timeout=timeout)
             new_data = [0] * 0x15
             if nbytes < 16:
-                for i in xrange(0, nbytes):
+                for i in range(0, nbytes):
                     new_data[i] = buf[i + 4]
                 nbytes = 0
             else:
-                for i in xrange(0, 16):
+                for i in range(0, 16):
                     new_data[i] = buf[i + 4]
                 nbytes -= 16
                 addr += 16
@@ -3508,7 +3507,7 @@ class CommunicationService(object):
             newbuf[2] = buf[2]
             newbuf[3] = ACTION_SEND_CONFIG # 0x20 # change this value if we won't store config
             newbuf[4] = buf[4]
-            for i in xrange(5, newlen):
+            for i in range(5, newlen):
                 newbuf[i] = cfgbuf[i]
             if DEBUG_CONFIG_DATA > 2:
                 self.hid.dump('OutBuf', newbuf, fmt='long', length=newlen)
@@ -3667,12 +3666,12 @@ class CommunicationService(object):
         return newlen, newbuf
 
     # timestamp of record with time 'None'
-    TS_1900 = tstr_to_ts(str(datetime(1900, 01, 01, 00, 00)))
+    TS_1900 = tstr_to_ts(str(datetime(1900, 0o1, 0o1, 00, 00)))
 
     # initially the clock of the KlimaLogg station starts at 1-jan-2010,
     # so skip all records elder than 1-jul-2010
     # eldest valid timestamp for history record
-    TS_2010_07 = tstr_to_ts(str(datetime(2010, 07, 01, 00, 00)))
+    TS_2010_07 = tstr_to_ts(str(datetime(2010, 0o7, 0o1, 00, 00)))
 
     def handleHistoryData(self, length, buf):
         if DEBUG_HISTORY_DATA > 1:
@@ -4025,7 +4024,7 @@ class CommunicationService(object):
         logdbg('frequency standard: %s' % frequency_standard)
         freq = frequencies.get(frequency_standard, frequencies['EU'])
         loginf('base frequency: %d' % freq)
-        freqVal = long(freq / 16000000.0 * 16777216.0)
+        freqVal = int(freq / 16000000.0 * 16777216.0)
         corVec = self.hid.readConfigFlash(0x1F5, 4)
         corVal = corVec[0] << 8
         corVal |= corVec[1]
@@ -4177,7 +4176,7 @@ class CommunicationService(object):
             loginf("starting rf communication")
             while self.running:
                 self.doRFCommunication()
-        except Exception, e:
+        except Exception as e:
             logerr('exception in doRF: %s' % e)
             if weewx.debug:
                 log_traceback(dst=syslog.LOG_ERR)
@@ -4210,7 +4209,7 @@ class CommunicationService(object):
             statebuf = [0] * 2
             try:
                 statebuf = self.hid.getState()
-            except Exception, e:
+            except Exception as e:
                 logerr('getState failed: %s' % e)
                 time.sleep(5)
                 pass
@@ -4229,10 +4228,10 @@ class CommunicationService(object):
         except DataWritten:
             logdbg('SetTime/SetConfig data written')
             self.hid.setRX()
-        except BadResponse, e:
+        except BadResponse as e:
             logerr('generateResponse failed: %s' % e)
             self.hid.setRX()
-        except UnknownDeviceId, e:
+        except UnknownDeviceId as e:
             if self.config_serial is None:
                 logerr("%s; use parameter 'serial' if more than one USB transceiver present" % e)
             self.hid.setRX()
