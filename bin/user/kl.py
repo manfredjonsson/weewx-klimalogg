@@ -1911,7 +1911,6 @@ class KlimaLoggDriver(weewx.drivers.AbstractDevice):
                 n = self.get_cached_history_count()
                 batch_started = n > 0
                 if n == last_n:
-                    dur = now - last_ts
                     if not batch_started:
                         if records_handled == 0:
                             logtee(PRESS_USB)
