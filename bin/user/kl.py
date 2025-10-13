@@ -1215,6 +1215,9 @@ try:
     def loginf(msg):
         log.info(msg)
 
+    def logcrt(msg):
+        log.critical(msg)
+
     def logerr(msg):
         log.error(msg)
 
@@ -1230,6 +1233,9 @@ except ImportError:
 
     def loginf(msg):
         logmsg(syslog.LOG_INFO, msg)
+
+    def logcrt(msg):
+        logmsg(syslog.LOG_CRIT, msg)
 
     def logerr(msg):
         logmsg(syslog.LOG_ERR, msg)
