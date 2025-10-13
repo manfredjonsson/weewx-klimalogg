@@ -1,7 +1,7 @@
 # installer for klimalogg
 # Copyright 2015 Luc Heijst
 
-from setup import ExtensionInstaller
+from weecfg.extension import ExtensionInstaller
 
 def loader():
     return KlimaLoggInstaller()
@@ -9,7 +9,7 @@ def loader():
 class KlimaLoggInstaller(ExtensionInstaller):
     def __init__(self):
         super(KlimaLoggInstaller, self).__init__(
-            version="1.3.7",
+            version="1.4.2",
             name='klimalogg',
             description='Collect and display KlimaLogg Pro sensor data',
             author="Luc Heijst",
