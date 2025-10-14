@@ -18,8 +18,9 @@ class KlimaLoggInstaller(ExtensionInstaller):
                 'StdReport': {
                     'data_binding': 'kl_binding',
                     'kl': {
-                        'HTML_ROOT': 'kl',
-                        'skin': 'kl'}},
+                        'skin': 'kl',
+                        'enable': 'true',
+                        'HTML_ROOT': 'kl'}},
                 'StdArchive': {
                     'data_binding': 'kl_binding'},
                 'DataBindings': {

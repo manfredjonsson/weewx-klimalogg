@@ -68,6 +68,7 @@ and StdArchive sections
 
 Remove the [Simulator] driver section if it exists.
 
-Remove the [[StandardReport]] section of [StdReport] if it exists.  The
+Disable the [[StandardReport]] or other sections of [StdReport] if they
+exist and do not use the kl_binding. Probably all except [kl]. The
 KlimaLogg is not a 'standard' weather station, so the graphs and reports
 in skin Standard will not work properly.
